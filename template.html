@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История операционных систем</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Vis.js -->
+    <script src="https://unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
+    <link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header class="main-header">
+        <h1>История операционных систем</h1>
+        <p class="tagline">Интерактивное путешествие по ключевым этапам развития</p>
+    </header>
+
+    <main class="container">
+        <!-- Левая колонка: Таймлайн -->
+        <section class="timeline-section">
+            <h2>Хронология развития</h2>
+            <p>Выберите событие на шкале, чтобы увидеть подробности и запустить соответствующую среду.</p>
+            <div id="visual-timeline"></div>
+            <div id="event-description">
+                <h3 id="event-title">Добро пожаловать!</h3>
+                <p id="event-text">Выберите событие на временной шкале, чтобы здесь появилось его описание, а в эмуляторе справа — соответствующая операционная система или программа.</p>
+            </div>
+        </section>
+
+        <!-- Правая колонка: Эмулятор и управление -->
+        <section class="emulator-section">
+            <h2>Эмулятор исторической среды</h2>
+            <div class="emulator-controls">
+                <label for="os-selector">Быстрый выбор ОС:</label>
+                <select id="os-selector">
+                    <option value="">-- Выберите ОС --</option>
+                    <option value="dos">MS-DOS 6.22</option>
+                    <option value="win31">Windows 3.1</option>
+                    <option value="linux">Early Linux (Buildroot)</option>
+                </select>
+                <div class="button-group">
+                    <button id="btn-start">Запустить эмулятор</button>
+                    <button id="btn-reset">Перезагрузить</button>
+                </div>
+            </div>
+            <div class="emulator-screen-container">
+                <!-- ОСНОВНОЙ КОНТЕЙНЕР ЭКРАНА -->
+                <div id="screen_container" style="width: 100%; height: 100%; background-color: black;">
+                    <!-- ЭТИ ДВА ВЛОЖЕННЫХ ЭЛЕМЕНТА ОБЯЗАТЕЛЬНЫ! -->
+                    <div style="white-space: pre; font: 14px monospace; line-height: 14px"></div>
+                    <canvas style="display: none"></canvas>
+                </div>
+        
+                <!-- Ваш overlay можно оставить, но убедитесь, что он ПОД основным контейнером -->
+                <div class="screen-overlay" id="screen-overlay">
+                    <p>Эмулятор не активен...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>Индивидуальный проект по истории ОС. Для создания использованы: Vis.js, v86.js.</p>
+        <p>Образы систем предназначены только для образовательных целей.</p>
+
+    <script src="vendor/v86/libv86.js"></script>
+
+    <!-- Подключаем наш основной скрипт -->
+    <script src="app.js"></script>
+</body>
+</html>

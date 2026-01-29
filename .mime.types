@@ -1,0 +1,5 @@
+.wasm application/wasm
+.bin application/octet-stream
+.js application/javascript
+.css text/css
+.html text/html

@@ -1,0 +1,286 @@
+/* Базовые сбросы и общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+
+/* Шапка */
+.main-header {
+    background: linear-gradient(to right, #2c3e50, #4a6491);
+    color: white;
+    padding: 2rem 1rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.main-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 300;
+}
+
+.main-header .tagline {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* Основной контейнер с колонками */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    gap: 2rem;
+}
+
+/* Левая колонка: Таймлайн (примерно 60%) */
+.timeline-section {
+    flex: 3;
+    min-width: 300px;
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* Правая колонка: Эмулятор (примерно 40%) */
+.emulator-section {
+    flex: 2;
+    min-width: 300px;
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Стилизация самого таймлайна Vis.js */
+#visual-timeline {
+    margin: 1.5rem 0;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* Блок описания события */
+#event-description {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f8fafc;
+    border-left: 4px solid #4a6491;
+    border-radius: 0 6px 6px 0;
+}
+
+#event-title {
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+}
+
+#event-text {
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Панель управления эмулятором */
+.emulator-controls {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+.emulator-controls label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.emulator-controls select {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 1rem;
+    min-width: 180px;
+}
+
+.button-group {
+    display: flex;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
+.button-group button {
+    padding: 0.65rem 1.25rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+#btn-start {
+    background-color: #28a745;
+    color: white;
+}
+
+#btn-start:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+#btn-reset {
+    background-color: #dc3545;
+    color: white;
+}
+
+#btn-reset:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* Основной экран эмулятора */
+.emulator-screen-container {
+    flex-grow: 1;
+    position: relative;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #444;
+    min-height: 400px; /* Минимальная высота */
+}
+
+#screen_container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* Наложение, когда эмулятор не активен */
+.screen-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.1rem;
+    z-index: 10;
+}
+
+/* Инструкции */
+.instructions {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    color: #856404;
+}
+
+.instructions h4 {
+    margin-bottom: 0.5rem;
+    color: #856404;
+}
+
+.instructions ul {
+    padding-left: 1.5rem;
+}
+
+.instructions kbd {
+    background-color: #f8f9fa;
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+/* Подвал */
+.main-footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 1.5rem;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    border-top: 1px solid #eee;
+}
+
+/* Стили для контента событий из файлов history */
+.event-content h2 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #eaeaea;
+}
+
+.event-content p {
+    margin-bottom: 1rem;
+}
+
+.event-content strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.event-content ul, .event-content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.event-content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Адаптивность */
+@media (max-width: 1100px) {
+    .container {
+        flex-direction: column;
+    }
+    .emulator-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .button-group {
+        margin-left: 0;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-header h1 {
+        font-size: 2rem;
+    }
+    .timeline-section, .emulator-section {
+        padding: 1rem;
+    }
+    #event-description {
+        padding: 1rem;
+    }
+}
