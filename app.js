@@ -25,6 +25,14 @@ const emulatorConfigs = {
         vgaBiosUrl: 'vendor/v86/bios/vgabios.bin',
         cdromUrl: 'vendor/v86/images/linux.iso',
         autostart: true
+    },
+    'win31': {
+        name: 'Windows 3.1 (Русская Версия)',
+        biosUrl: 'vendor/v86/bios/seabios.bin',
+        vgaBiosUrl: 'vendor/v86/bios/vgabios.bin',
+        hdaUrl: "vendor/v86/images/win31_final.img",
+        memory_size: 32 * 1024 * 1024,
+        autostart: true
     }
 };
 
@@ -296,21 +304,7 @@ document.getElementById('btn-start').addEventListener('click', function() {
         return;
     }
 
-    if (selectedOS === 'win31') {
-        stopCurrentEmulator();
-        const screenContainer = document.getElementById('screen_container');
-        screenContainer.innerHTML = `
-            <iframe 
-                src="https://www.pcjs.org/software/pcx86/sys/windows/3.10/" 
-                style="width:100%; height:100%; border:none;"
-                allow="autoplay"
-                title="Windows 3.1 Emulator"
-            ></iframe>`;
-        document.getElementById('screen-overlay').style.display = 'none';
-        currentEmulatorType = 'iframe';
-        showMessage('Windows 3.1 загружается...', 'success');
-        return;
-    }
+
 
     const config = emulatorConfigs[selectedOS];
     if (config) {
