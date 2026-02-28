@@ -1,0 +1,31 @@
+{
+  "name": "pcejs-macplus",
+  "description": "Mac Plus emulator for the browser",
+  "keywords": [
+    "emulator",
+    "browserify"
+  ],
+  "author": "James Friend",
+  "version": "0.2.2",
+  "dependencies": {
+    "xtend": "^3.0.0"
+  },
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "https://raw.github.com/jsdf/pce/master/COPYING"
+    }
+  ],
+  "scripts": {
+    "prepublish": "./prepublish.sh macplus && ./umd.sh"
+  },
+  "homepage": "https://github.com/jsdf/pce",
+  "bugs": "https://github.com/jsdf/pce/issues",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jsdf/pce.git"
+  },
+  "devDependencies": {
+    "browserify": "^16.5.1"
+  }
+}

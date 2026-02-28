@@ -284,3 +284,20 @@ body {
         padding: 1rem;
     }
 }
+
+.pcejs-container {
+    margin-top: 32px;
+    text-align: center;
+    font-family: sans-serif;
+}
+.pcejs-canvas {
+    cursor: none; /* скрываем курсор хоста */
+    border: 0px none;
+    padding: 0;
+    margin: 0 auto;
+    display: block;
+}
+.pcejs-loading-status {
+    margin: 10px;
+    font-family: monospace;
+}

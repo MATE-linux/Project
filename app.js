@@ -15,6 +15,7 @@ const timelineGroups = [
 // Конфигурация эмуляторов (остается статической, но можно тоже вынести в отдельные файлы)
 const emulatorConfigs = {
     'dos': {
+        type: 'v86',
         name: 'MS-DOS 6.22',
         biosUrl: 'vendor/v86/bios/seabios.bin',
         vgaBiosUrl: 'vendor/v86/bios/vgabios.bin',
@@ -22,6 +23,7 @@ const emulatorConfigs = {
         autostart: true
     },
     'linux': {
+        type: 'v86',
         name: 'Buildroot Linux',
         biosUrl: 'vendor/v86/bios/seabios.bin',
         vgaBiosUrl: 'vendor/v86/bios/vgabios.bin',
@@ -29,11 +31,36 @@ const emulatorConfigs = {
         autostart: true
     },
     'win31': {
+        type: 'v86',
         name: 'Windows 3.1 (Русская Версия)',
         biosUrl: 'vendor/v86/bios/seabios.bin',
         vgaBiosUrl: 'vendor/v86/bios/vgabios.bin',
         hdaUrl: "vendor/v86/images/win31_final.img",
         memory_size: 32 * 1024 * 1024,
+        autostart: true
+    },
+    'win95': {
+        type: 'v86',
+        name: 'Windows 95 OSR 2 (Русская Версия)',
+        biosUrl: 'vendor/v86/bios/seabios.bin',
+        vgaBiosUrl: 'vendor/v86/bios/vgabios.bin',
+        hdaUrl: "vendor/v86/images/win95disk.img",
+        memory_size: 200 * 1024 * 1024,
+        autostart: true,
+        acpi: false,
+        vga: {
+            memory_size: 8 * 1024 * 1024,
+            // model: "cirrus" — v86.js не поддерживает модель, убираем
+        }
+    },
+    'mac': {
+        name: 'Macintosh System 7.0.1',
+        type: 'pce',
+        // Пути к файлам (относительно корня сайта)
+        romPath: 'vendor/pce/mac-plus.rom',
+        romPatchPath: 'vendor/pce/macplus-pcex.rom',
+        diskPath: 'vendor/pce/hd1.qed',
+        configPath: 'vendor/pce/pce-config.cfg',
         autostart: true
     }
 };
@@ -41,13 +68,15 @@ const emulatorConfigs = {
 // Маппинг файлов на конфигурацию эмуляторов
 const eventEmulatorMap = {
     '1981.html': 'dos',
+    '1984.html': 'mac',
     '1991.html': 'linux',
-    '1992.html': 'win31'
+    '1992.html': 'win31',
 };
 
 // ================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==================
 let visTimeline;
 let v86Emulator = null;
+let pceEmulator = null;
 let currentEmulatorType = null;
 
 // ================== ЗАГРУЗКА СОБЫТИЙ ИЗ ПАПКИ HISTORY ==================
@@ -95,17 +124,11 @@ async function loadEventsFromHistory() {
                 let emulatorConfig = null;
                 const emulatorKey = eventEmulatorMap[eventFile.filename];
                 
-                if (emulatorKey === 'win31') {
-                    emulatorConfig = {
-                        type: 'iframe',
-                        url: 'https://www.pcjs.org/software/pcx86/sys/windows/3.10/'
-                    };
-                } else if (emulatorKey && emulatorConfigs[emulatorKey]) {
-                    emulatorConfig = {
-                        type: 'v86',
-                        ...emulatorConfigs[emulatorKey]
-                    };
-                }
+
+                emulatorConfig = {
+                    type: 'v86',
+                    ...emulatorConfigs[emulatorKey]
+                };
 
                 timelineEvents.push({
                     id: eventFile.id,
@@ -216,18 +239,22 @@ async function handleTimelineSelect(properties) {
 
     // 4. Обновляем селектор ОС
     const osSelector = document.getElementById('os-selector');
-    if (event.emulatorConfig) {
-        let optionValue = '';
-        if (event.emulatorConfig.type === 'v86' && event.emulatorConfig.name.includes('DOS')) optionValue = 'dos';
-        if (event.emulatorConfig.type === 'iframe') optionValue = 'win31';
-        if (event.emulatorConfig.type === 'v86' && event.emulatorConfig.name.includes('Linux')) optionValue = 'linux';
-
-        osSelector.value = optionValue;
-        document.getElementById('btn-start').textContent = `Запустить ${event.emulatorConfig.name || 'эмулятор'}`;
+    const startBtn = document.getElementById('btn-start');
+    if (event.emulatorConfig && event.emulatorConfig.name) {
+        if (event.emulatorConfig.type === 'v86') {
+            let optionValue = '';
+            if (event.emulatorConfig.name.includes('DOS')) optionValue = 'dos';
+            if (event.emulatorConfig.name.includes('Windows 3.1')) optionValue = 'win31';
+            if (event.emulatorConfig.name.includes('Linux')) optionValue = 'linux';
+            // if (event.emulatorConfig.name.includes('Windows 95')) optionValue = 'win95';
+            osSelector.value = optionValue;
+        } else if (event.emulatorConfig.type === 'pce') {
+            osSelector.value = 'mac';
+        }
+        startBtn.textContent = `Запустить ${event.emulatorConfig.name}`;
     } else {
         osSelector.value = '';
-        document.getElementById('btn-start').textContent = 'Запустить эмулятор';
-        showMessage('Для выбранного события нет доступного эмулятора.', 'info');
+        startBtn.textContent = 'Запустить эмулятор';
     }
 }
 
@@ -253,18 +280,13 @@ function startV86Emulator(config) {
     try {
         const v86Config = {
             wasm_path: 'vendor/v86/v86-debug.wasm',
-            memory_size: 32 * 1024 * 1024,
-            vga_memory_size: 8 * 1024 * 1024,
+            memory_size: config.memory_size || 32 * 1024 * 1024,
+            vga_memory_size: (config.vga && config.vga.memory_size) || 8 * 1024 * 1024,
             screen_container: screenContainer,
-            bios: { 
-                url: config.biosUrl,
-                async: true 
-            },
-            vga_bios: { 
-                url: config.vgaBiosUrl,
-                async: true 
-            },
+            bios: { url: config.biosUrl, async: true },
+            vga_bios: { url: config.vgaBiosUrl, async: true },
             autostart: config.autostart !== undefined ? config.autostart : true,
+            acpi: config.acpi !== undefined ? config.acpi : true, // по умолчанию true
         };
 
         if (config.hdaUrl) {
@@ -299,21 +321,71 @@ function startV86Emulator(config) {
         showMessage(`Ошибка: ${error.message}`, 'error');
     }
 }
+async function startPCEEmulator(config) {
+    stopCurrentEmulator();
+
+    const screenContainer = document.getElementById('screen_container');
+    screenContainer.innerHTML = '';
+    document.getElementById('screen-overlay').style.display = 'none';
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'pcejs-canvas';
+    canvas.setAttribute('oncontextmenu', 'event.preventDefault()');
+    screenContainer.appendChild(canvas);
+
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'pcejs-loading-status';
+    loadingDiv.textContent = 'Загрузка Macintosh...';
+    screenContainer.appendChild(loadingDiv);
+
+    const pceModule = window.PCEJSMacplus;
+    if (!pceModule) {
+        showMessage('Модуль PCE.js не найден', 'error');
+        return;
+    }
+
+    pceEmulator = pceModule({
+        arguments: ['-c', 'pce-config.cfg', '-r'],
+        autoloadFiles: [
+            config.romPatchPath,   // macplus-pcex.rom
+            config.romPath,        // mac-plus.rom
+            config.diskPath,       // hd.img
+            config.configPath      // pce-config.cfg
+        ],
+        locateFile: (filename) => {
+            // Указываем, где лежит .wasm файл
+            return 'vendor/pce/' + filename; // предполагаем, что pce-macplus.wasm лежит в vendor/pce/
+        },
+        print: (msg) => console.log('[PCE]', msg),
+        printErr: (msg) => console.warn('[PCE error]', msg),
+        canvas: canvas,
+        monitorRunDependencies: (remaining) => {
+            if (remaining === 0) {
+                loadingDiv.style.display = 'none';
+            } else {
+                loadingDiv.textContent = `Загрузка... осталось ${remaining} файлов`;
+            }
+        }
+    });
+
+    currentEmulatorType = 'pce';
+    showMessage(`${config.name} запущен`, 'success');
+}
 
 // ================== ОБРАБОТЧИКИ КНОПОК ==================
 document.getElementById('btn-start').addEventListener('click', function() {
     const selectedOS = document.getElementById('os-selector').value;
-    
     if (!selectedOS) {
         showMessage('Сначала выберите операционную систему из списка.', 'warning');
         return;
     }
-
-
-
     const config = emulatorConfigs[selectedOS];
     if (config) {
-        startV86Emulator(config);
+        if (config.type === 'v86') {
+            startV86Emulator(config);
+        } else if (config.type === 'pce') {
+            startPCEEmulator(config);
+        }
     }
 });
 
@@ -322,10 +394,17 @@ function stopCurrentEmulator() {
         v86Emulator.stop();
         v86Emulator = null;
     }
+    if (pceEmulator) {
+        // Если есть метод остановки – вызываем, иначе просто затираем
+        if (pceEmulator.stop) pceEmulator.stop();
+        else if (pceEmulator.exit) pceEmulator.exit();
+        pceEmulator = null;
+    }
+    const container = document.getElementById('screen_container');
+    container.innerHTML = ''; // очищаем канвас и сообщения
     document.getElementById('screen-overlay').style.display = 'flex';
     currentEmulatorType = null;
 }
-
 // ================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==================
 function showMessage(text, type = 'info') {
     const colors = {
