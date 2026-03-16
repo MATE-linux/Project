@@ -5,11 +5,11 @@ let eventsLoaded = false;
 
 // Группы для таймлайна (ветви ОС)
 const timelineGroups = [
-    { id: 'unix', content: 'UNIX / Linux' },
-    { id: 'dos', content: 'MS-DOS' },
-    { id: 'windows', content: 'Windows' },
-    { id: 'mac', content: 'Mac OS' },
-    { id: 'android', content: 'Android'}
+    { id: 'unix', content: 'UNIX', order: 1 },
+    { id: 'linux', content: 'Linux / Android', order: 2 },
+    { id: 'windows_dos', content: 'Windows / DOS', order: 3 },
+    { id: 'apple', content: 'Apple Mac', order: 4 },
+    { id: 'other', content: 'Other OS', order: 5 }  //пока пусто, но пригодится
 ];
 
 // Конфигурация эмуляторов (остается статической, но можно тоже вынести в отдельные файлы)
@@ -83,15 +83,15 @@ let currentEmulatorType = null;
 async function loadEventsFromHistory() {
     try {
         // Список файлов событий
-        const eventFiles = [
-            { filename: '1969.html', id: 1, start: '1969-01-01', group: 'unix', content: 'UNIX (1969)' },
-            { filename: '1981.html', id: 2, start: '1981-08-01', group: 'dos', content: 'MS-DOS 1.0 (1981)' },
-            { filename: '1984.html', id: 5, start: '1984-01-01', group: 'mac', content: 'Macintosh System 1.0 (1984)' },
-            { filename: '1991.html', id: 4, start: '1991-09-17', group: 'unix', content: 'Linux 0.01 (1991)' },
-            { filename: '1992.html', id: 3, start: '1992-01-01', group: 'windows', content: 'Windows 3.1 (1992)' },
-            { filename: '1995.html', id: 6, start: '1995-08-24', group: 'windows', content: 'Windows 95 (1995)' },
-            { filename: '2008.html', id: 7, start: '2008-09-23', group: 'android', content: 'Android 1.0 (2008)' }
-        ];
+	const eventFiles = [
+	    { filename: '1969.html', id: 1, start: '1969-01-01', group: 'unix', content: 'UNIX (1969)' },
+	    { filename: '1981.html', id: 2, start: '1981-08-01', group: 'windows_dos', content: 'MS-DOS 1.0 (1981)' },
+	    { filename: '1984.html', id: 5, start: '1984-01-01', group: 'apple', content: 'Macintosh System 1.0 (1984)' },
+	    { filename: '1991.html', id: 4, start: '1991-09-17', group: 'linux', content: 'Linux 0.01 (1991)' },
+	    { filename: '1992.html', id: 3, start: '1992-01-01', group: 'windows_dos', content: 'Windows 3.1 (1992)' },
+	    { filename: '1995.html', id: 6, start: '1995-08-24', group: 'windows_dos', content: 'Windows 95 (1995)' },
+	    { filename: '2008.html', id: 7, start: '2008-09-23', group: 'linux', content: 'Android 1.0 (2008)' }
+	];
 
         timelineEvents = [];
 
@@ -206,9 +206,9 @@ async function initTimeline() {
     const options = {
         stack: false,
         orientation: 'top',
-        height: '220px',
+        height: '280px',
         margin: { item: 5 },
-        groupOrder: 'content'
+        // groupOrder: 'content' порядок группировки теперь вручную
     };
 
     visTimeline = new vis.Timeline(container, items, groups, options);
